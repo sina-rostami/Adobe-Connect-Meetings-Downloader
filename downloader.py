@@ -10,8 +10,12 @@ import shutil
 from media_converter import convert_audio, convert_video
 
 class Downloader:
-    def __init__(self, login_page_url, base_download_url, pasted_url, login_data, login_headers, download_headers,
-    name_to_save):
+
+    def __init__(self,
+                login_page_url, base_download_url, pasted_url,
+                login_data,
+                login_headers, download_headers,
+                name_to_save):
         print('Preparing...')
         self.login_page_url = login_page_url
         self.base_download_url = base_download_url
@@ -69,11 +73,21 @@ class Downloader:
         print('Extracting data...')
         zipfile.ZipFile('./temp/'+self.name_to_save+'/'+self.name_to_save+'.zip', 'r').extractall('temp/'+self.name_to_save)
         print('Extracted!')
+
     def convert_media(self):
         print('Converting media...')
         convert_audio(self.name_to_save)
         convert_video(self.name_to_save)
         print('Converted!')
 
-    def remove_temp_directory():
+    # def download_other_files(self):
+    #     with open('./temp/'+self.name_to_save+'/'+'indexstream.xml', 'r') as file:
+    #         data = file.readlines()
+    #         pdfs = re.findall('<downloadUrl><![CDATA[/system/download?download-url=/_a7/(.*)]]></downloadUrl>', data)
+
+
+
+
+
+    def remove_temp_directory(self):
         shutil.rmtree('./temp')
