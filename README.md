@@ -1,5 +1,4 @@
 # Adobe-Connect-Meeting-Downloader
-
 ## requierments
 it's enugh to just have installed `python` and `pip` on your device.
 
@@ -12,3 +11,4 @@ pip install -r requierments.txt
 ```
 python kntu_vc_dl.py
 ```
+
