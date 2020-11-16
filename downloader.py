@@ -1,4 +1,5 @@
 import re
+import xml.etree.ElementTree as ET
 import requests
 import os
 from bs4 import BeautifulSoup
@@ -80,10 +81,16 @@ class Downloader:
         convert_video(self.name_to_save)
         print('Converted!')
 
-    # def download_other_files(self):
-    #     with open('./temp/'+self.name_to_save+'/'+'indexstream.xml', 'r') as file:
-    #         data = file.readlines()
-    #         pdfs = re.findall('<downloadUrl><![CDATA[/system/download?download-url=/_a7/(.*)]]></downloadUrl>', data)
+    def download_other_files(self):
+        print('Downloading pdf...')
+        index_stream_xml = ET.parse('./temp/' + self.name_to_save +'/mainstream.xml')
+        pdfs = index_stream_xml.findall('Message/Array/Object/newValue/documentDescriptor/downloadUrl')
+        for pdf in list(pdfs):
+            pdf_url = self.base_download_url + re.split('/', pdf.text)[4] + '/source/' +  re.split('/', pdf.text)[6][6:] + '?download=true'
+            with self.dl_session.get(pdf_url, headers=self.download_headers) as req:
+                with open('./output/'+self.name_to_save+'/'+re.split('/', pdf.text)[4]+'.pdf', 'wb') as pdf_file:
+                    pdf_file.write(req.content)
+        print('Pdf Downloaded!')
 
 
 
