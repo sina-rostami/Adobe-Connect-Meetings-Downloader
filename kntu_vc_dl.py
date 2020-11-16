@@ -25,6 +25,7 @@ def kntu_download(user_name, password, kntu_url):
     kntu_downloader.save_file()
     kntu_downloader.extract_zip_file()
     kntu_downloader.convert_media()
+    kntu_downloader.download_other_files()
     kntu_downloader.remove_temp_directory()
 
 print('username and pass are the same as your vc.kntu.ac.ir credentials\n'
