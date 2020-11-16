@@ -1,5 +1,5 @@
-# Adobe-Connect-Meeting-Downloader
-## requierments
+# Adobe-Connect-Based-Meetings-Downloader
+## Requierments
 it's enugh to just have installed `python` and `pip` on your device.
 
 then to install requierments for the first time
