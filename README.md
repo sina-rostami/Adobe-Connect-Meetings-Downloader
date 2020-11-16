@@ -3,12 +3,12 @@
 ## requierments
 it's enugh to just have installed `python` and `pip` on your device.
 
-## start
-for start using the app, first run the command below in the repo directory:
+then to install requierments for the first time
+run the command below in your terminal in the repository directory:
 ```
 pip install -r requierments.txt
 ```
-## run
+### KNTU
 ```
 python kntu_vc_dl.py
 ```

@@ -27,7 +27,11 @@ def kntu_download(user_name, password, kntu_url):
     kntu_downloader.convert_media()
     kntu_downloader.remove_temp_directory()
 
-kntu_download('username', 'pass', 'copied link')
-# username and pass is your vc.kntu.ac.ir credentials
+print('username and pass are the same as your vc.kntu.ac.ir credentials\n'
+'copied link should be like :\n'
+'https://vc.kntu.ac.ir/mod/adobeconnect/joinrecording.php?id=4442&recording=1421241&groupid=0&sesskey=FkpuiUTGx1\n')
+
+kntu_download(input('username : '), input('password : '), input('copied link : '))
+# username and pass are your vc.kntu.ac.ir credentials
 # copied_link should be like :
 # https://vc.kntu.ac.ir/mod/adobeconnect/joinrecording.php?id=4442&recording=1421241&groupid=0&sesskey=FkpuiUTGx1
