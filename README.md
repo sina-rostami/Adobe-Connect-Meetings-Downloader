@@ -1,3 +1,5 @@
+<div dir="rtl">
+  
 # Adobe-Connect-Based-Meetings-Downloader
 # دانلودر جلسات ادوبی کانکت
 ## [آموزش فارسی](https://github.com/online-meeting-downloader/Adobe-Connect-Based-Meetings/wiki)
@@ -16,4 +18,4 @@ pip install -r requierments.txt
 ```
 python kntu_vc_dl.py
 ```
-
+</div>
