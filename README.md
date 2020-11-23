@@ -1,6 +1,6 @@
 # Adobe-Connect-Based-Meetings-Downloader
-
-برای آموزش فارسی به این  [لینک](https://github.com/online-meeting-downloader/Adobe-Connect-Based-Meetings/wiki) زیر مراجعه کنید: 
+# دانلودر جلسات ادوبی کانکت
+## [آموزش فارسی](https://github.com/online-meeting-downloader/Adobe-Connect-Based-Meetings/wiki)
 
 
 
