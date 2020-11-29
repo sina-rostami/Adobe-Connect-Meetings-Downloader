@@ -86,15 +86,15 @@ class Downloader:
         index_stream_xml = ET.parse('./temp/' + self.name_to_save +'/mainstream.xml')
         pdfs = index_stream_xml.findall('Message/Array/Object/newValue/documentDescriptor/downloadUrl')
         for pdf in list(pdfs):
-            pdf_url = self.base_download_url + re.split('/', pdf.text)[4] + '/source/' +  re.split('/', pdf.text)[6][6:] + '?download=true'
-            with self.dl_session.get(pdf_url, headers=self.download_headers) as req:
-                with open('./output/'+self.name_to_save+'/'+re.split('/', pdf.text)[4]+'.pdf', 'wb') as pdf_file:
-                    pdf_file.write(req.content)
+            try:
+                pdf_url = self.base_download_url + re.split('/', pdf.text)[4] + '/source/' +  re.split('/', pdf.text)[6][6:] + '?download=true'
+                print('Downloading ' + re.split('/', pdf.text)[6][6:])
+                with self.dl_session.get(pdf_url, headers=self.download_headers) as req:
+                    with open('./output/'+self.name_to_save+'/'+re.split('/', pdf.text)[6][6:]+'.pdf', 'wb') as pdf_file:
+                        pdf_file.write(req.content)
+            except:
+                pass
         print('Pdf Downloaded!')
-
-
-
-
 
     def remove_temp_directory(self):
         shutil.rmtree('./temp')
