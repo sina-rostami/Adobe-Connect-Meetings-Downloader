@@ -13,21 +13,25 @@ from media_converter import convert_audio, convert_video
 class Downloader:
 
     def __init__(self,
-                login_page_url, base_download_url, pasted_url,
+                login_page_url, base_download_url,
                 login_data,
-                login_headers, download_headers,
-                name_to_save):
+                login_headers, download_headers):
         print('Preparing...')
         self.login_page_url = login_page_url
         self.base_download_url = base_download_url
-        self.pasted_url = pasted_url
+        self.pasted_url = None
         self.login_data = login_data
         self.login_headers = login_headers
         self.download_headers = download_headers
         self.dl_session = requests.Session()
-        self.name_to_save = name_to_save
+        self.name_to_save = None
         self.download_link = None
         self.meeting_page_req = None
+
+    def set_pasted_url(self, url):
+        self.pasted_url = url
+    def set_name_to_save(self, name):
+        self.name_to_save = name
 
     def login(self, extra_data):
         print('Logging in...')
