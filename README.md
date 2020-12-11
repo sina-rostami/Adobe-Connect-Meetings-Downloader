@@ -14,8 +14,20 @@ run the command below in your terminal in the repository directory:
 pip install -r requirements.txt
 ```
 ### Use
-Run your university module.
++ open `info.txt` file,<br>
++ replace username and password with your username and password,<br>
++ paste links you want to download in place of urls
++ run your university module.
 >#### KNTU
 >```
 >python kntu_vc_dl.py
 >```
+
+### Example
+After editing the `info.txt` file, it should be like this:<br>
+```
+9123456
+mypassword
+https://vc.kntu.ac.ir/mod/adobeconnect/joinrecording.php?id=1111&recording=2222&groupid=0&sesskey=aaaaaaa
+https://vc.kntu.ac.ir/mod/adobeconnect/joinrecording.php?id=2222&recording=3333&groupid=0&sesskey=bbbbbbb
+```
