@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from requests.sessions import session
 import zipfile
 import shutil
+from tqdm import tqdm
 
 from media_converter import convert_audio, convert_video, print_events_time_table
 
@@ -42,9 +43,13 @@ class Downloader:
         for elem in extra_data:
             self.login_data[elem] = soup.find(
                 'input', attrs={'name': elem})['value']
-        self.dl_session.post(self.login_page_url,
-                             data=self.login_data, headers=self.login_headers)
+        post = self.dl_session.post(self.login_page_url,
+                                    data=self.login_data, headers=self.login_headers)
+        if "loginerrormessage" in post.text:
+            print("Username or Password is Incorrect")
+            return False
         print('Logged in!')
+        return True
 
     def set_cookies(self):
         print('Setting cookies...')
@@ -63,15 +68,18 @@ class Downloader:
         script_dl = bs.find_all('script', attrs={'language': 'JavaScript'})
         meeting_real_link = re.findall(
             "var urlPath = '/(.*)/';", str(script_dl))
+        if len(meeting_real_link) == 0:
+            print("Invalid Link (maybe you are not authorized!)")
+            return False
         self.download_link = self.base_download_url + \
             meeting_real_link[0] + '/output/temp.zip?download=zip'
         print('Download link created!')
+        return True
 
     def download_file(self):
         print('Downloading...')
         self.download_req = self.dl_session.get(
-            self.download_link, headers=self.download_headers)
-        print('Downloaded!')
+            self.download_link, headers=self.download_headers, stream=True)
 
     def save_file(self):
         print('Saving file...')
@@ -80,8 +88,10 @@ class Downloader:
         if not os.path.exists('temp/'+self.name_to_save):
             os.mkdir('temp/'+self.name_to_save)
         with open('./temp/'+self.name_to_save+'/'+self.name_to_save+'.zip', 'wb') as file:
-            file.write(self.download_req.content)
-        print('File Saved')
+            for data in tqdm(self.download_req.iter_content(), unit_scale=True, desc=self.name_to_save,
+                             unit='B', total=int(self.download_req.headers['content-length'])):
+                file.write(data)
+        print(self.name_to_save + ' Downloaded and Saved')
 
     def extract_zip_file(self):
         print('Extracting data...')
@@ -92,11 +102,13 @@ class Downloader:
     def convert_media(self):
         print('Converting media...')
         print_events_time_table(self.name_to_save)
-        #convert_audio(self.name_to_save)
-        #convert_video(self.name_to_save)
+        # todo : convert medias
         print('Converted!')
 
     def download_other_files(self):
+        output_directory = './output/'+self.name_to_save+'/'
+        if not os.path.exists(output_directory):
+            os.makedirs(output_directory)
         print('Downloading pdf...')
         index_stream_xml = ET.parse(
             './temp/' + self.name_to_save + '/indexstream.xml')
@@ -109,9 +121,12 @@ class Downloader:
                     re.split('/', pdf.text)[4] + '/source/' + \
                     pdf_name + '?download=true'
                 print('Downloading ' + pdf_name)
-                with self.dl_session.get(pdf_url, headers=self.download_headers) as req:
+
+                with self.dl_session.get(pdf_url, headers=self.download_headers, stream=True) as req:
                     with open('./output/' + self.name_to_save + '/' + pdf_name, 'wb') as pdf_file:
-                        pdf_file.write(req.content)
+                        for data in tqdm(req.iter_content(), unit_scale=True, desc=pdf_name,
+                                         unit='B', total=int(req.headers['content-length'])):
+                            pdf_file.write(data)
             except:
                 pass
         print('Pdf Downloaded!')
