@@ -8,7 +8,7 @@ import zipfile
 import shutil
 from tqdm import tqdm
 
-from media_converter import convert_audio, convert_video, print_events_time_table
+from media_converter import convert_media
 
 
 class Downloader:
@@ -101,8 +101,7 @@ class Downloader:
 
     def convert_media(self):
         print('Converting media...')
-        print_events_time_table(self.name_to_save)
-        # todo : convert medias
+        convert_media(self.name_to_save)
         print('Converted!')
 
     def download_other_files(self):

@@ -14,7 +14,7 @@ def convert_media(meeting_id):
     if not os.path.exists('./output/' + meeting_id):
         os.makedirs(output_path)
 
-    time_table = print_events_time_table(meeting_id)
+    time_table = get_events_time_table(meeting_id)
     videos = []
     prev_scrnshr = ""
     for item in time_table:
@@ -43,10 +43,12 @@ def convert_media(meeting_id):
     else:
         aud_out = audios[0]
 
-    if len(videos) > 1:
-        vid_out = ffmpeg.filter(videos, 'concat', n=str(len(videos)), v=1, a=0)
-    else:
+    if len(videos) == 0:
+        vid_out = None
+    elif len(videos) == 1:
         vid_out = videos[0]
+    else:
+        vid_out = ffmpeg.filter(videos, 'concat', n=str(len(videos)), v=1, a=0)
 
     if vid_out:
         stream = ffmpeg.output(aud_out, vid_out, output_path + 'output.mp4', loglevel=log_level)
@@ -56,7 +58,7 @@ def convert_media(meeting_id):
     ffmpeg.run(stream, overwrite_output=True)
 
 
-def print_events_time_table(file_name):
+def get_events_time_table(file_name):
     mainstream_path = './temp/' + file_name + '/mainstream.xml'
     with open(mainstream_path) as file:
         mainstream = xmltodict.parse(file.read())
@@ -80,10 +82,4 @@ def print_events_time_table(file_name):
         time_table[ev][0] = time_table[ev][0] - time_table[first_stream][0]
         time_table[ev][1] = time_table[ev][1] - time_table[first_stream][0]
 
-    # for debug mode comment return line
     return time_table
-
-    for ev in time_table:
-        print(ev + ':')
-        for e in time_table[ev]:
-            print(e)
