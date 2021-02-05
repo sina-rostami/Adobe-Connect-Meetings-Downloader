@@ -1,4 +1,4 @@
 output/
 temp/
 __pycache__/
-
+.idea/
