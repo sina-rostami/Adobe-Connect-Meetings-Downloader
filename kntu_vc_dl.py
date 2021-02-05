@@ -19,10 +19,10 @@ def kntu_download(user_name, password, pasted_urls):
     kntu_downloader.login({'logintoken'})
 
     for url in pasted_urls:
-        if re.match('https://vc\.kntu\.ac\.ir/mod/adobeconnect/joinrecording\.php.*', url):
-            filename=re.findall('recording=(\d+)&', url)
-            print('Downloading ' + filename[0] + '...')
-            kntu_downloader.set_name_to_save(filename[0])
+        if re.match(r'https://vc\.kntu\.ac\.ir/mod/adobeconnect/joinrecording\.php.*', url):
+            filename=re.findall('recording=(\d+)&', url)[0]
+            print('Downloading ' + filename + '...')
+            kntu_downloader.set_name_to_save(filename)
             kntu_downloader.set_pasted_url(url)
             kntu_downloader.set_cookies()
             kntu_downloader.create_downlaod_link()
@@ -31,11 +31,11 @@ def kntu_download(user_name, password, pasted_urls):
             kntu_downloader.extract_zip_file()
             kntu_downloader.convert_media()
             kntu_downloader.download_other_files()
-            print(filename[0] + ' downloaded!')
+            print(filename + ' downloaded!')
         else:
             print('wrong url')
 
-    kntu_downloader.remove_temp_directory()
+    # kntu_downloader.remove_temp_directory()
 
 with open('info.txt', 'r') as f:
     lines = f.read().splitlines()
