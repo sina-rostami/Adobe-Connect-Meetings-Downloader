@@ -39,8 +39,9 @@ def kntu_download(user_name, password, pasted_urls):
 
     # kntu_downloader.remove_temp_directory()
 
-with open('info.txt', 'r') as f:
-    lines = f.read().splitlines()
-    user_name = lines[0]
-    password = lines[1]
-    kntu_download(user_name, password, lines[2:])
+if __name__ == '__main__':
+    with open('info.txt', 'r') as f:
+        lines = f.read().splitlines()
+        user_name = lines[0]
+        password = lines[1]
+        kntu_download(user_name, password, lines[2:])
