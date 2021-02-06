@@ -5,3 +5,4 @@ ffmpeg-python
 pyffmpeg
 xmltodict
 tqdm
+PySimpleGUI
