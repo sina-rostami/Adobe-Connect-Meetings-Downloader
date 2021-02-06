@@ -35,8 +35,9 @@ def convert_media(meeting_id):
     audios = []
     camera_voips = [f for f in os.listdir(meeting_temp_path) if re.match('cameraVoip.+\.flv', f)]
     for camera_voip in camera_voips:
-        aud = ffmpeg.input(meeting_temp_path + camera_voip).audio
-        audios.append(ffmpeg.filter(aud, 'adelay', '{}ms'.format(time_table[camera_voip][0])))
+        if camera_voip in time_table:
+            aud = ffmpeg.input(meeting_temp_path + camera_voip).audio
+            audios.append(ffmpeg.filter(aud, 'adelay', '{}ms'.format(time_table[camera_voip][0])))
 
     if len(audios) > 1:
         aud_out = ffmpeg.filter(audios, 'amix', inputs=len(audios))
@@ -51,10 +52,11 @@ def convert_media(meeting_id):
         vid_out = ffmpeg.filter(videos, 'concat', n=str(len(videos)), v=1, a=0)
 
     if vid_out:
-        stream = ffmpeg.output(aud_out, vid_out, output_path + 'output.mp4', loglevel=log_level)
+        stream = ffmpeg.output(aud_out, vid_out, output_path + 'output.flv', loglevel=log_level)
     else:
         stream = ffmpeg.output(aud_out, output_path + 'output.mp3', loglevel=log_level)
 
+    # print(ffmpeg.compile(stream))
     ffmpeg.run(stream, overwrite_output=True)
 
 
@@ -76,7 +78,11 @@ def get_events_time_table(file_name):
                     time_table[event_name] = list()
                 time_table[event_name].append(int(event['@time']))
             elif event.get('String') == "streamRemoved":
-                time_table[event_name].append(int(event['@time']))
+                end_time = int(event['@time'])
+                if end_time > time_table[event_name][0]:
+                    time_table[event_name].append(end_time)
+                else:
+                    time_table.pop(event_name)
 
     for ev in time_table:
         time_table[ev][0] = time_table[ev][0] - time_table[first_stream][0]
