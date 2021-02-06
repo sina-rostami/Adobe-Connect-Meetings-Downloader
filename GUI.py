@@ -5,7 +5,7 @@ import threading
 sg.theme("Reddit")
 
 def download_thread(values, window):
-    pasted_urls = values['-LINKS-'].split("\n")
+    pasted_urls = [l for l in values['-LINKS-'].split("\n") if len(l) > 10]
     kntu_vc_dl.kntu_download(values['-USERNAME-'], values['-PASSWD-'], pasted_urls)
     window.reappear()
 
