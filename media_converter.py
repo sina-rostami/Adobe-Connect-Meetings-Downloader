@@ -80,6 +80,7 @@ def get_events_time_table(file_name):
 
     for ev in time_table:
         time_table[ev][0] = time_table[ev][0] - time_table[first_stream][0]
-        time_table[ev][1] = time_table[ev][1] - time_table[first_stream][0]
+        if len(time_table[ev]) == 2:
+            time_table[ev][1] = time_table[ev][1] - time_table[first_stream][0]
 
     return time_table

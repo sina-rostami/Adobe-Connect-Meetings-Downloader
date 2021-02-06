@@ -88,9 +88,12 @@ class Downloader:
         if not os.path.exists('temp/'+self.name_to_save):
             os.mkdir('temp/'+self.name_to_save)
         with open('./temp/'+self.name_to_save+'/'+self.name_to_save+'.zip', 'wb') as file:
-            for data in tqdm(self.download_req.iter_content(), unit_scale=True, desc=self.name_to_save,
-                             unit='B', total=int(self.download_req.headers['content-length'])):
+            t = tqdm(unit_scale=True, desc=self.name_to_save,
+                     unit='B', total=int(self.download_req.headers['content-length']))
+            for data in self.download_req.iter_content(8192):
                 file.write(data)
+                t.update(8192)
+            t.close()
         print(self.name_to_save + ' Downloaded and Saved')
 
     def extract_zip_file(self):
@@ -108,7 +111,7 @@ class Downloader:
         output_directory = './output/'+self.name_to_save+'/'
         if not os.path.exists(output_directory):
             os.makedirs(output_directory)
-        print('Downloading pdf...')
+        print('Downloading pdfs...')
         index_stream_xml = ET.parse(
             './temp/' + self.name_to_save + '/indexstream.xml')
         pdfs = index_stream_xml.findall(
@@ -119,16 +122,21 @@ class Downloader:
                 pdf_url = self.base_download_url + \
                     re.split('/', pdf.text)[4] + '/source/' + \
                     pdf_name + '?download=true'
+                path_to_save = './output/' + self.name_to_save + '/' + pdf_name
+                if os.path.isfile(path_to_save):
+                    continue
                 print('Downloading ' + pdf_name)
-
                 with self.dl_session.get(pdf_url, headers=self.download_headers, stream=True) as req:
-                    with open('./output/' + self.name_to_save + '/' + pdf_name, 'wb') as pdf_file:
-                        for data in tqdm(req.iter_content(), unit_scale=True, desc=pdf_name,
-                                         unit='B', total=int(req.headers['content-length'])):
+                    with open(path_to_save, 'wb') as pdf_file:
+                        t = tqdm(unit_scale=True, desc=pdf_name,
+                                 unit='B', total=int(req.headers['content-length']))
+                        for data in req.iter_content(2048):
                             pdf_file.write(data)
+                            t.update(2048)
+                        t.close()
             except:
-                pass
-        print('Pdf Downloaded!')
+                continue
+        print('Pdfs Downloaded!')
 
     def remove_temp_directory(self):
         shutil.rmtree('./temp')
