@@ -56,8 +56,8 @@ def convert_media(meeting_id):
     else:
         stream = ffmpeg.output(aud_out, output_path + 'output.mp3', loglevel=log_level)
 
-    # print(ffmpeg.compile(stream))
-    ffmpeg.run(stream, overwrite_output=True)
+    # args = ffmpeg.compile(stream, cmd='./ffmpeg.exe', overwrite_output=True)
+    ffmpeg.run(stream, cmd='./ffmpeg.exe', overwrite_output=True)
 
 
 def get_events_time_table(file_name):
