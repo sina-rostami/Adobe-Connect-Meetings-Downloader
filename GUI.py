@@ -1,22 +1,25 @@
 import PySimpleGUI as sg
 import kntu_vc_dl
-import threading
 
-sg.theme("Reddit")
+sg.theme("Topanga")
 
-def download_thread(values, window):
+
+def download_meeting(values, window):
     pasted_urls = [l for l in values['-LINKS-'].split("\n") if len(l) > 10]
-    kntu_vc_dl.kntu_download(values['-USERNAME-'], values['-PASSWD-'], pasted_urls)
-    window.reappear()
+    kntu_vc_dl.kntu_download(
+        values['-USERNAME-'], values['-PASSWD-'], pasted_urls)
 
 
-layout = [[sg.T("Username:")], [sg.Input(key="-USERNAME-", size=(20,1))],
-        [sg.T("Password:")], [sg.Input(key="-PASSWD-", size=(20,1))],
-        [sg.T("Links:")], [sg.MLine(key="-LINKS-", size=(60, 15))],
-        [sg.Button("START")]]
+layout = [
+    [sg.T('"Welcome To Adobe Connect Meetings Downloader"', pad=(220, 0))],
+    [sg.T('UserName:')], [sg.Input(key='-USERNAME-', size=(25, 1))],
+    [sg.T('Password:')], [sg.Input(key='-PASSWD-', size=(25, 1))],
+    [sg.T('Mettings Links:')], [sg.MLine(key='-LINKS-', size=(150, 20))],
+    [sg.Button('Download', pad=(350,1))]
+]
 
-
-window = sg.Window('Adobe Connect Based Meeting Downloader', layout, size=(500, 500))
+window = sg.Window('Adobe Connect Meetings Downloader',
+                   layout, size=(800, 500), grab_anywhere=True)
 
 while True:
     event, values = window.read()
@@ -24,6 +27,7 @@ while True:
     if event == sg.WIN_CLOSED:
         break
 
-    elif event == "START":
+    elif event == "Download":
         window.disappear()
-        threading.Thread(target=download_thread, args=(values,window)).start()
+        download_meeting(values, window)
+        break
