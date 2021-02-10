@@ -140,3 +140,4 @@ class Downloader:
 
     def remove_temp_directory(self):
         shutil.rmtree('./temp')
+        shutil.rmtree('./__pycache__')

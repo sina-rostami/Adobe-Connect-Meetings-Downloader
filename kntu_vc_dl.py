@@ -37,7 +37,7 @@ def kntu_download(user_name, password, pasted_urls):
         else:
             print('Wrong URL format')
 
-    # kntu_downloader.remove_temp_directory()
+    kntu_downloader.remove_temp_directory()
 
 if __name__ == '__main__':
     with open('info.txt', 'r') as f:
