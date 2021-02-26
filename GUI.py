@@ -5,7 +5,7 @@ sg.theme("Topanga")
 
 
 def download_meeting(values, window):
-    pasted_urls = [l for l in values['-LINKS-'].split("\n") if len(l) > 10]
+    pasted_urls = [l for l in values['-LINKS-'].split("\n") if len(l) > 0]
     kntu_vc_dl.kntu_download(
         values['-USERNAME-'], values['-PASSWD-'], pasted_urls)
 
@@ -19,7 +19,7 @@ layout = [
 ]
 
 window = sg.Window('Adobe Connect Meetings Downloader',
-                   layout, size=(800, 500), grab_anywhere=True)
+                   layout, size=(800, 520), grab_anywhere=True)
 
 while True:
     event, values = window.read()

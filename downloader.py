@@ -139,5 +139,7 @@ class Downloader:
         print('Pdfs Downloaded!')
 
     def remove_temp_directory(self):
-        shutil.rmtree('./temp')
-        shutil.rmtree('./__pycache__')
+        if os.path.isdir('./temp'):
+            shutil.rmtree('./temp')
+        if os.path.isdir('./__pycache__'):
+            shutil.rmtree('./__pycache__')
