@@ -125,7 +125,9 @@ class Downloader:
                 pdf_url = self.base_download_url + \
                     re.split('/', pdf.text)[4] + '/source/' + \
                     pdf_name + '?download=true'
-                path_to_save = './output/' + self.name_to_save + '/' + pdf_name
+                pdf_name = requests.utils.unquote(pdf_name)
+                path_to_save = './output/' + self.name_to_save + \
+                    '/' + pdf_name
                 if os.path.isfile(path_to_save):
                     continue
                 print('Downloading ' + pdf_name)

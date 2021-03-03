@@ -5,6 +5,7 @@ sg.theme("Topanga")
 
 
 def download_meeting(values, window):
+    window.close()
     pasted_urls = [l for l in values['-LINKS-'].split("\n") if len(l) > 0]
     kntu_vc_dl.kntu_download(
         values['-USERNAME-'], values['-PASSWD-'], pasted_urls)
@@ -28,6 +29,5 @@ while True:
         break
 
     elif event == "Download":
-        window.disappear()
         download_meeting(values, window)
         break
