@@ -1,5 +1,7 @@
 from downloader import Downloader
+import time
 import re
+
 def kntu_download(user_name, password, pasted_urls):
 
     kntu_headers = {
@@ -36,6 +38,7 @@ def kntu_download(user_name, password, pasted_urls):
             print(filename + ' downloaded!')
         else:
             print('Wrong URL format')
+            time.sleep(10)
 
     kntu_downloader.remove_temp_directory()
 

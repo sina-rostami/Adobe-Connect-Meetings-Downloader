@@ -7,6 +7,7 @@ from requests.sessions import session
 import zipfile
 import shutil
 from tqdm import tqdm
+import time
 
 from media_converter import convert_media
 
@@ -47,6 +48,7 @@ class Downloader:
                                     data=self.login_data, headers=self.login_headers)
         if "loginerrormessage" in post.text:
             print("Username or Password is Incorrect")
+            time.sleep(10)
             return False
         print('Logged in!')
         return True
@@ -70,6 +72,7 @@ class Downloader:
             "var urlPath = '/(.*)/';", str(script_dl))
         if len(meeting_real_link) == 0:
             print("Invalid Link (maybe you are not authorized!)")
+            time.sleep(10)
             return False
         self.download_link = self.base_download_url + \
             meeting_real_link[0] + '/output/temp.zip?download=zip'
