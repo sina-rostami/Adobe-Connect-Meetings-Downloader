@@ -6,7 +6,7 @@ import re
 
 def convert_media(meeting_id):
     # for debugging change from 'quiet' to 'info'
-    log_level = 'quiet'
+    log_level = 'info'
 
     meeting_temp_path = './temp/' + meeting_id + '/'
     output_path = './output/' + meeting_id + '/'
@@ -31,7 +31,10 @@ def convert_media(meeting_id):
             #     prev_scrnshr = item
             #     start_duration = time_table[item][0]
             #videos.append(ffmpeg.filter(vid, 'tpad', start_duration='{}ms'.format(start_duration)))
-            ffmpeg.run(ffmpeg.output(vid, output_path + item.split('.')[0] + '.mkv', f='flv', c='copy', loglevel=log_level), overwrite_output=True)
+            try:
+                ffmpeg.run(ffmpeg.output(vid, output_path + item.split('.')[0] + '.mp4', f='flv', c='copy', loglevel=log_level), overwrite_output=True)
+            except:
+                pass
 
     audios = []
     camera_voips = [f for f in os.listdir(meeting_temp_path) if re.match('cameraVoip.+\.flv', f)]
