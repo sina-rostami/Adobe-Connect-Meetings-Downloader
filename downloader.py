@@ -114,34 +114,41 @@ class Downloader:
         output_directory = './output/'+self.name_to_save+'/'
         if not os.path.exists(output_directory):
             os.makedirs(output_directory)
-        print('Downloading pdfs...')
+        print('Downloading other files...')
         index_stream_xml = ET.parse(
             './temp/' + self.name_to_save + '/indexstream.xml')
-        pdfs = index_stream_xml.findall(
-            'Message/Array/Object/newValue/documentDescriptor/downloadUrl')
-        for pdf in list(pdfs):
-            try:
-                pdf_name = re.split('/', pdf.text)[6][6:]
-                pdf_url = self.base_download_url + \
-                    re.split('/', pdf.text)[4] + '/source/' + \
-                    pdf_name + '?download=true'
-                pdf_name = requests.utils.unquote(pdf_name)
-                path_to_save = './output/' + self.name_to_save + \
-                    '/' + pdf_name
-                if os.path.isfile(path_to_save):
-                    continue
-                print('Downloading ' + pdf_name)
-                with self.dl_session.get(pdf_url, headers=self.download_headers, stream=True) as req:
-                    with open(path_to_save, 'wb') as pdf_file:
-                        t = tqdm(unit_scale=True, desc=pdf_name,
-                                 unit='B', total=int(req.headers['content-length']))
-                        for data in req.iter_content(2048):
-                            pdf_file.write(data)
-                            t.update(2048)
-                        t.close()
-            except:
-                continue
-        print('Pdfs Downloaded!')
+        for arr in index_stream_xml.findall('Message'):
+            if int(arr.get('time')) > 0:
+                files = arr.findall(
+                    'Array/Object/newValue/documentDescriptor')
+                for file in list(files):
+                    try:
+                        if file.find('downloadUrl').text != None:
+                            file_name = re.split('/', file.find('downloadUrl').text)[6][6:]
+                            file_url = self.base_download_url + \
+                                re.split('/', file.find('downloadUrl').text)[4] + '/source/' + \
+                                file_name + '?download=true'
+                        elif file.find('registerContentUrl').text != None:
+                            file_name = file.find('theName').text
+                            prefix = re.split('/', file.find('registerContentUrl').text)[1]
+                            file_url = 'http://connect.kntu.ac.ir/' + prefix + '/output/' + file_name
+                        file_name = requests.utils.unquote(file_name)
+                        path_to_save = './output/' + self.name_to_save + \
+                            '/' + file_name
+                        if os.path.isfile(path_to_save):
+                            continue
+                        print('Downloading ' + file_name)
+                        with self.dl_session.get(file_url, headers=self.download_headers, stream=True) as req:
+                            with open(path_to_save, 'wb') as file_file:
+                                t = tqdm(unit_scale=True, desc=file_name,
+                                        unit='B', total=int(req.headers['content-length']))
+                                for data in req.iter_content(8192):
+                                    file_file.write(data)
+                                    t.update(8192)
+                                t.close()
+                    except :
+                        continue
+        print('other files Downloaded!')
 
     def remove_temp_directory(self):
         if os.path.isdir('./temp'):
