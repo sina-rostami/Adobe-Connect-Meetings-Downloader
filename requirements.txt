@@ -2,7 +2,6 @@ requests
 bs4
 html5lib
 ffmpeg-python
-pyffmpeg
 xmltodict
 tqdm
 PySimpleGUI
