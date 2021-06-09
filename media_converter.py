@@ -6,7 +6,7 @@ import re
 
 def convert_media(meeting_id):
     # for debugging change from 'quiet' to 'info'
-    log_level = 'info'
+    log_level = 'quiet'
 
     meeting_temp_path = './temp/' + meeting_id + '/'
     output_path = './output/' + meeting_id + '/'
@@ -61,7 +61,10 @@ def convert_media(meeting_id):
 # -f flv -c copy for each one
 
     stream = ffmpeg.output(aud_out, output_path + 'meeting_audio.mp3', loglevel=log_level)
-    ffmpeg.run(stream, overwrite_output=True)
+    try:
+        ffmpeg.run(stream, overwrite_output=True)
+    except:
+        print('Something were wrong during conversion!!')
 
 
 def get_events_time_table(file_name):

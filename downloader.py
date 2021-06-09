@@ -44,19 +44,21 @@ class Downloader:
         for elem in extra_data:
             self.login_data[elem] = soup.find(
                 'input', attrs={'name': elem})['value']
-        post = self.dl_session.post(self.login_page_url,
+        post = self.dl_session.post(req.url,
                                     data=self.login_data, headers=self.login_headers)
-        if "loginerrormessage" in post.text:
+        if "Invalid credentials" in post.text or "loginerrormessage" in post.text:
             print("Username or Password is Incorrect")
             time.sleep(10)
             return False
+        soup = BeautifulSoup(post.content, 'html5lib')
+        if 'user_radio_0' in post.text:
+            post = self.dl_session.post(post.url, data={'rdb': soup.find('input', attrs={
+                                        'name': 'rdb', 'id': 'user_radio_0'})['value'], 'button': 'Log in'}, headers=self.login_headers)
         print('Logged in!')
         return True
 
     def set_cookies(self):
         print('Setting cookies...')
-        self.meeting_page_req = self.dl_session.get(
-            self.pasted_url, headers=self.download_headers)
         session_cookie = ''
         for item in self.dl_session.cookies.get_dict():
             session_cookie = session_cookie + item + "=" + \
@@ -66,16 +68,22 @@ class Downloader:
 
     def create_downlaod_link(self):
         print('Creating download link...')
-        bs = BeautifulSoup(self.meeting_page_req.content, 'html5lib')
-        script_dl = bs.find_all('script', attrs={'language': 'JavaScript'})
-        meeting_real_link = re.findall(
-            "var urlPath = '/(.*)/';", str(script_dl))
-        if len(meeting_real_link) == 0:
+        self.meeting_page_req = self.dl_session.get(
+            self.pasted_url, headers=self.download_headers)
+
+        self.set_cookies()
+        try:
+            host_value = re.findall(
+                r'var hostValue = \'(.*)\';', self.meeting_page_req.text)[0]
+            url_path = re.findall(
+                r'var urlPath = \'(/\w+/)\';', self.meeting_page_req.text)[0]
+        except:
             print("Invalid Link (maybe you are not authorized!)")
             time.sleep(10)
             return False
-        self.download_link = self.base_download_url + \
-            meeting_real_link[0] + '/output/temp.zip?download=zip'
+        self.base_download_url = host_value
+        self.download_link = host_value + \
+            url_path + 'output/temp.zip?download=zip'
         print('Download link created!')
         return True
 
@@ -124,14 +132,15 @@ class Downloader:
                 for file in list(files):
                     try:
                         if file.find('downloadUrl').text != None:
-                            file_name = re.split('/', file.find('downloadUrl').text)[6][6:]
-                            file_url = self.base_download_url + \
-                                re.split('/', file.find('downloadUrl').text)[4] + '/source/' + \
+                            file_name = re.split(
+                                '/', file.find('downloadUrl').text)[6][6:]
+                            file_url = self.base_download_url + '/' + re.split('/', file.find('downloadUrl').text)[4] + '/source/' + \
                                 file_name + '?download=true'
                         elif file.find('registerContentUrl').text != None:
                             file_name = file.find('theName').text
-                            prefix = re.split('/', file.find('registerContentUrl').text)[1]
-                            file_url = 'http://connect.kntu.ac.ir/' + prefix + '/output/' + file_name
+                            prefix = re.split(
+                                '/', file.find('registerContentUrl').text)[1]
+                            file_url = self.base_download_url + '/' + prefix + '/output/' + file_name
                         file_name = requests.utils.unquote(file_name)
                         path_to_save = './output/' + self.name_to_save + \
                             '/' + file_name
@@ -141,12 +150,12 @@ class Downloader:
                         with self.dl_session.get(file_url, headers=self.download_headers, stream=True) as req:
                             with open(path_to_save, 'wb') as file_file:
                                 t = tqdm(unit_scale=True, desc=file_name,
-                                        unit='B', total=int(req.headers['content-length']))
+                                         unit='B', total=int(req.headers['content-length']))
                                 for data in req.iter_content(8192):
                                     file_file.write(data)
                                     t.update(8192)
                                 t.close()
-                    except :
+                    except:
                         continue
         print('other files Downloaded!')
 
