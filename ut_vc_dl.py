@@ -1,4 +1,5 @@
 from downloader import Downloader
+import exporter
 import os
 import re
 import shutil
@@ -28,18 +29,13 @@ def ut_download(user_name, password, pasted_urls):
     for url in pasted_urls:
         if re.match(r'https://elearn\d*\.ut\.ac\.ir/mod/adobeconnect\d*/joinrecording\.php.*', url):
             filename=re.findall('recording=(\d+)&', url)[0]
-            print('Downloading ' + filename + '...')
-            ut_downloader.set_name_to_save(filename)
-            ut_downloader.set_pasted_url(url)
-            ut_downloader.set_cookies()
-            if not ut_downloader.create_downlaod_link():
+            if not ut_downloader.download_meeting(url):
+                print('An error occurred during download...')
+                time.sleep(10)
                 continue
-            ut_downloader.download_file()
-            ut_downloader.save_file()
-            ut_downloader.extract_zip_file()
-            ut_downloader.convert_media()
+            exporter.export(filename)
             ut_downloader.download_other_files()
-            print(filename + ' downloaded!')
+            print(filename + ' is ready!')
         else:
             print('Wrong URL format')
             time.sleep(10)

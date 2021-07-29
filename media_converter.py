@@ -63,8 +63,9 @@ def convert_media(meeting_id):
     stream = ffmpeg.output(aud_out, output_path + 'meeting_audio.mp3', loglevel=log_level)
     try:
         ffmpeg.run(stream, overwrite_output=True)
+        return True
     except:
-        print('Something were wrong during conversion!!')
+        return False
 
 
 def get_events_time_table(file_name):
