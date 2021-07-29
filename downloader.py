@@ -8,6 +8,7 @@ import zipfile
 import shutil
 from tqdm import tqdm
 import time
+import exporter
 
 from media_converter import convert_media
 
@@ -54,6 +55,7 @@ class Downloader:
         if 'user_radio_0' in post.text:
             post = self.dl_session.post(post.url, data={'rdb': soup.find('input', attrs={
                                         'name': 'rdb', 'id': 'user_radio_0'})['value'], 'button': 'Log in'}, headers=self.login_headers)
+        self.set_cookies()
         print('Logged in!')
         return True
 
@@ -89,34 +91,29 @@ class Downloader:
 
     def download_file(self):
         print('Downloading...')
-        self.download_req = self.dl_session.get(
-            self.download_link, headers=self.download_headers, stream=True)
+        try:
+            self.download_req = self.dl_session.get(
+                self.download_link, headers=self.download_headers, stream=True)
+            if not os.path.exists('temp'):
+                os.mkdir('temp')
+            with open('./temp/'+self.name_to_save+'.zip', 'wb') as file:
+                t = tqdm(unit_scale=True, desc=self.name_to_save,
+                         unit='B', total=int(self.download_req.headers['content-length']))
+                for data in self.download_req.iter_content(8192):
+                    file.write(data)
+                    t.update(8192)
+                t.close()
+            print(self.name_to_save + ' Downloaded and Saved')
+            return True
+        except:
+            return False
 
-    def save_file(self):
-        print('Saving file...')
-        if not os.path.exists('temp'):
-            os.mkdir('temp')
-        if not os.path.exists('temp/'+self.name_to_save):
-            os.mkdir('temp/'+self.name_to_save)
-        with open('./temp/'+self.name_to_save+'/'+self.name_to_save+'.zip', 'wb') as file:
-            t = tqdm(unit_scale=True, desc=self.name_to_save,
-                     unit='B', total=int(self.download_req.headers['content-length']))
-            for data in self.download_req.iter_content(8192):
-                file.write(data)
-                t.update(8192)
-            t.close()
-        print(self.name_to_save + ' Downloaded and Saved')
-
-    def extract_zip_file(self):
-        print('Extracting data...')
-        zipfile.ZipFile('./temp/'+self.name_to_save+'/'+self.name_to_save +
-                        '.zip', 'r').extractall('temp/'+self.name_to_save)
-        print('Extracted!')
-
-    def convert_media(self):
-        print('Converting media...')
-        convert_media(self.name_to_save)
-        print('Converted!')
+    def download_meeting(self, url):
+        self.set_name_to_save(re.findall('recording=(\d+)&', url)[0])
+        self.set_pasted_url(url)
+        if not self.create_downlaod_link():
+            return False
+        return self.download_file()
 
     def download_other_files(self):
         output_directory = './output/'+self.name_to_save+'/'
@@ -147,7 +144,7 @@ class Downloader:
                         if os.path.isfile(path_to_save):
                             continue
                         print('Downloading ' + file_name)
-                        with self.dl_session.get(file_url, headers=self.download_headers, stream=True) as req:
+                        with self.dl_session.get(file_url, stream=True) as req:
                             with open(path_to_save, 'wb') as file_file:
                                 t = tqdm(unit_scale=True, desc=file_name,
                                          unit='B', total=int(req.headers['content-length']))

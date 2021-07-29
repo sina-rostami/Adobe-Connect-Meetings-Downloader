@@ -1,4 +1,7 @@
+from tkinter import Scrollbar
+from tkinter.constants import CENTER
 import PySimpleGUI as sg
+import export_only
 import kntu_vc_dl
 import ut_vc_dl
 import ikiu_vc_dl
@@ -23,12 +26,12 @@ layout = [
     [sg.T('University:')], [sg.Combo(['Khaje Nasir Toosi University Of Technology', 'University Of Tehran', 'Imam Khomeini International University'], key='-UNI-')],
     [sg.T('UserName:')], [sg.Input(key='-USERNAME-', size=(25, 1))],
     [sg.T('Password:')], [sg.Input(key='-PASSWD-', size=(25, 1))],
-    [sg.T('Mettings Links:')], [sg.MLine(key='-LINKS-', size=(150, 20))],
-    [sg.Button('Download', pad=(350,1))],
+    [sg.T('Mettings Links:')], [sg.MLine(key='-LINKS-', size=(150, 8))],
+    [sg.Button('Download'), sg.Button('Export-Only')],
 ]
 
 window = sg.Window('Adobe Connect Meetings Downloader',
-                   layout, size=(800, 520), grab_anywhere=True)
+                   layout, size=(800, 450), grab_anywhere=True, resizable=True)
 
 while True:
     event, values = window.read()
@@ -38,4 +41,8 @@ while True:
 
     elif event == "Download":
         download_meeting(values, window)
+        break
+    elif event == "Export-Only":
+        window.close()
+        export_only.export_only()
         break

@@ -1,6 +1,7 @@
 from downloader import Downloader
 import time
 import re
+import exporter
 
 def kntu_download(user_name, password, pasted_urls):
 
@@ -24,19 +25,14 @@ def kntu_download(user_name, password, pasted_urls):
 
     for url in pasted_urls:
         if re.match(r'https://vc\d*\.kntu\.ac\.ir/mod/adobeconnect/joinrecording\.php.*', url):
-            filename=re.findall('recording=(\d+)&', url)[0]
-            print('Downloading ' + filename + '...')
-            kntu_downloader.set_name_to_save(filename)
-            kntu_downloader.set_pasted_url(url)
-            kntu_downloader.set_cookies()
-            if not kntu_downloader.create_downlaod_link():
+            meeting_id=re.findall('recording=(\d+)&', url)[0]
+            if not kntu_downloader.download_meeting(url):
+                print('An error occurred during download...')
+                time.sleep(10)
                 continue
-            kntu_downloader.download_file()
-            kntu_downloader.save_file()
-            kntu_downloader.extract_zip_file()
-            kntu_downloader.convert_media()
+            exporter.export(meeting_id)
             kntu_downloader.download_other_files()
-            print(filename + ' downloaded!')
+            print(meeting_id + ' is ready!')
         else:
             print('Wrong URL format')
             time.sleep(10)

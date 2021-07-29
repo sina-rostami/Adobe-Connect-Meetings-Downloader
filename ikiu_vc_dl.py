@@ -1,6 +1,7 @@
 from downloader import Downloader
 import time
 import re
+import exporter
 
 
 def ikiu_download(user_name, password, pasted_urls):
@@ -27,17 +28,13 @@ def ikiu_download(user_name, password, pasted_urls):
         if re.match(r'https://ac\.aminidc\.com/(.*)/.*', url):
             filename=re.findall('recording=(\d+)&', url)[0]
             print('Downloading ' + filename + '...')
-            ikiu_downloader.set_name_to_save(filename)
-            ikiu_downloader.set_pasted_url(url)
-            ikiu_downloader.set_cookies()
-            if not ikiu_downloader.create_downlaod_link():
+            if not ikiu_downloader.download_meeting(url):
+                print('An error occurred during download...')
+                time.sleep(10)
                 continue
-            ikiu_downloader.download_file()
-            ikiu_downloader.save_file()
-            ikiu_downloader.extract_zip_file()
-            ikiu_downloader.convert_media()
+            exporter.export(filename)
             ikiu_downloader.download_other_files()
-            print(filename + ' downloaded!')
+            print(filename + ' is ready!')
         else:
             print('Wrong URL format')
             time.sleep(10)
