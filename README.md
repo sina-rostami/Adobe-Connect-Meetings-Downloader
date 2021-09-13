@@ -6,11 +6,13 @@
 
 
 ### requirements
+
 it's enough to just you've installed `python` and `pip` on your device.
 
 then to install requierments for the first time
 run the command below in your terminal in the repository directory:
-```
+
+```bash
 pip install -r requirements.txt
 ```
 
@@ -18,11 +20,13 @@ pip install -r requirements.txt
 ### Usage
 
 + simply run `GUI.py` file for the Graphical User Interface (for export-only mode, you should first follow cli instructions):
-```
+
+```bash
 python GUI.py
 ```
 
 or to use Command Line Interface (CLI) follow these steps :
+
 + to use full-featured mode:
   + open `info.txt` file,<br>
   + replace username and password with your username and password,<br>
@@ -50,8 +54,10 @@ or to use Command Line Interface (CLI) follow these steps :
 
 
 #### Example
+
 After editing the `info.txt` file, it should be like this:<br>
 ```
+
 9123456
 mypassword
 https://vc.kntu.ac.ir/mod/adobeconnect/joinrecording.php?id=1111&recording=2222&groupid=0&sesskey=aaaaaaa
@@ -59,6 +65,8 @@ https://vc.kntu.ac.ir/mod/adobeconnect/joinrecording.php?id=2222&recording=3333&
 ```
 
 ### Supported Univesities
+
 + Khaje Nasir Toosi University Of Technology
 + University Of Tehran
++ Isfahan University Of Technology
 + Imam Khomeini International University
