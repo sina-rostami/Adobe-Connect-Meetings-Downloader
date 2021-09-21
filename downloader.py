@@ -40,7 +40,7 @@ class Downloader:
     def login(self, extra_data):
         print('Logging in...')
         req = self.dl_session.get(
-            self.login_page_url, headers=self.login_headers)
+            self.login_page_url, headers=self.login_headers, verify=False)
         soup = BeautifulSoup(req.content, 'html5lib')
         for elem in extra_data:
             self.login_data[elem] = soup.find(

@@ -6,7 +6,7 @@ import exporter
 def kntu_download(user_name, password, pasted_urls):
 
     kntu_headers = {
-        'User-Agent' : 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.193 Safari/537.36',
+        'User-Agent' : 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36',
     }
 
     kntu_login_data = {
@@ -16,7 +16,7 @@ def kntu_download(user_name, password, pasted_urls):
     'rememberusername' : '0'
     }
 
-    kntu_downloader = Downloader('https://vc.kntu.ac.ir/login/index.php',
+    kntu_downloader = Downloader('https://vc4001.kntu.ac.ir/login/index.php',
     'https://connect.kntu.ac.ir/',
     kntu_login_data, kntu_headers, kntu_headers)
 
