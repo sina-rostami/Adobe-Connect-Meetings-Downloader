@@ -18,7 +18,7 @@ def download_meeting(values, window):
             values['-USERNAME-'], values['-PASSWD-'], pasted_urls)
     elif values['-UNI-'] == 'University Of Tehran':
         ut_vc_dl.ut_download(values['-USERNAME-'], values['-PASSWD-'], pasted_urls)
-    elif values['-UNI-'] == 'Isfahan Uinversity Of Technology':
+    elif values['-UNI-'] == 'Isfahan University Of Technology':
         iut_vc_dl.iut_download(values['-USERNAME-'], values['-PASSWD-'], pasted_urls)
     elif values['-UNI-'] == 'Imam Khomeini International University':
         ikiu_vc_dl.ikiu_download(values['-USERNAME-'], values['-PASSWD-'], pasted_urls)
@@ -26,7 +26,7 @@ def download_meeting(values, window):
 
 layout = [
     [sg.T('"Adobe Connect Meetings Tools"', pad=(220, 0))],
-    [sg.T('University:')], [sg.Combo(['Khaje Nasir Toosi University Of Technology', 'University Of Tehran', 'Isfahan Uinversity Of Technology','Imam Khomeini International University'], key='-UNI-')],
+    [sg.T('University:')], [sg.Combo(['Khaje Nasir Toosi University Of Technology', 'University Of Tehran', 'Isfahan University Of Technology','Imam Khomeini International University'], key='-UNI-')],
     [sg.T('Username:')], [sg.Input(key='-USERNAME-', size=(25, 1))],
     [sg.T('Password:')], [sg.Input(key='-PASSWD-', size=(25, 1))],
     [sg.T('Mettings Links:')], [sg.MLine(key='-LINKS-', size=(150, 8))],
