@@ -4,15 +4,9 @@ import os
 import re
 import tools as milad # Miladshakerdn => Github
 
-def dd(data):
-    print("die dump => ",data)
-    exit()
-def d(data):
-    print("dump => ",data)
-
 def convert_media(meeting_id):
     # for debugging change from 'quiet' to 'info'
-    log_level = 'info'
+    log_level = 'quiet'
 
     meeting_temp_path = './temp/' + meeting_id + '/'
     output_path = './output/' + meeting_id + '/'
@@ -23,8 +17,7 @@ def convert_media(meeting_id):
 
     time_table,time_Line = get_events_time_table(meeting_id)
     time_box = milad.timeLine(time_table,time_Line,meeting_id)
-    
-    # removefile(output_path)
+
     audios = []
     camera_voips = [f for f in os.listdir(meeting_temp_path) if re.match('cameraVoip.+\.flv', f)]
     for camera_voip in camera_voips:

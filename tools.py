@@ -75,9 +75,3 @@ def audios_splitter(targetAudio,time_box,output_path,format=".mp3"):
         cFrom = time_box[audio][0][0]
         cTo = time_box[audio][0][1]
         audioCut(targetAudio, outputAudio, cFrom, cTo)
-        
-# "ffmpeg -i org.mp3 -ss 1200ms -to 1260ms crup.mp3"
-#conversion_command = 'ffmpeg -i "%s" -i "%s" -c copy -map 0:a:0 -map 1:v:0 -shortest -y "%s"'%(cameraVoip_filepath, screenshare_filepath, output_filepath)
-
-#ffmpeg -i "DSP3\cameraVoip_0_3.flv" -i "DSP3\screenshare_2_5.flv" -c copy -map 0:a:0 -map 1:v:0 -shortest -y "output_videos\noname_0000.flv"
-#run_command(conversion_command)
