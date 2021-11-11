@@ -7,7 +7,8 @@ import tools as milad # Miladshakerdn => Github
 def convert_media(meeting_id):
     # for debugging change from 'quiet' to 'info'
     log_level = 'quiet'
-
+    # Sound volume 0-100
+    volume = 100
     meeting_temp_path = './temp/' + meeting_id + '/'
     output_path = './output/' + meeting_id + '/'
     targetAudio = output_path + 'meeting_audio.mp3'
@@ -25,22 +26,17 @@ def convert_media(meeting_id):
             target_audio_path = meeting_temp_path + camera_voip
             prop = len(ffmpeg.probe(meeting_temp_path + camera_voip)['streams'])
 
-            if prop == 2: # check is audio have data
+            if prop > 1: # check is audio have data
                 aud = ffmpeg.input(target_audio_path).audio
                 audios.append(ffmpeg.filter(aud, 'adelay', '{}ms'.format(time_table[camera_voip][0])))
-            
-            if prop > 2 : # voice from web cam
-                output_audio_path = meeting_temp_path + 'audio' + camera_voip
-                milad.audio_webcam_extract(target_audio_path,output_audio_path)
-                aud = ffmpeg.input(output_audio_path).audio
-                audios.append(ffmpeg.filter(aud, 'adelay', '{}ms'.format(time_table[camera_voip][0])))
-            
+                
     if len(audios) > 1:
         aud_out = ffmpeg.filter(audios, 'amix', inputs=len(audios))
+        aud_out = ffmpeg.filter(aud_out,'volume', volume)
     else:
-        aud_out = audios[0]
+        aud_out = ffmpeg.filter(audios[0],'volume', volume)
 
-    stream = ffmpeg.output(aud_out, targetAudio, loglevel=log_level)
+    stream = ffmpeg.output(aud_out, targetAudio ,loglevel=log_level)
     try:
         ffmpeg.run(stream, overwrite_output=True)
     except:
