@@ -26,7 +26,7 @@ def run_command(command):
     return rc
 
 def audioCut(targetAudio, outputAudio, cFrom, cTo):
-    conversion_command = 'ffmpeg -i "{0}" -ss {1}ms -to {2}ms -c copy "{3}"'.format(targetAudio, cFrom, cTo, outputAudio)
+    conversion_command = 'ffmpeg -loglevel quiet -hide_banner -i "{0}" -ss {1}ms -to {2}ms -c copy "{3}"'.format(targetAudio, cFrom, cTo, outputAudio)
     run_command(conversion_command)
 
 def videoAddAudio(targetAudio, targetVideo, output_path):
@@ -35,7 +35,7 @@ def videoAddAudio(targetAudio, targetVideo, output_path):
     output_VideoName=output_VideoName.replace(".flv","")
     targetAudio = output_path + targetAudio
     targetVideo = output_path + targetVideo
-    conversion_command = 'ffmpeg -i "{0}" -i "{1}" -c copy -map 0:a:0 -map 1:v:0 -shortest -y "{3}{2}.flv"'.format(targetAudio, targetVideo, output_VideoName, output_path)
+    conversion_command = 'ffmpeg -loglevel quiet -hide_banner -i "{0}" -i "{1}" -c copy -map 0:a:0 -map 1:v:0 -shortest -y "{3}{2}.flv"'.format(targetAudio, targetVideo, output_VideoName, output_path)
     run_command(conversion_command)
     removefile(targetAudio)
     removefile(targetVideo)
@@ -75,3 +75,8 @@ def audios_splitter(targetAudio,time_box,output_path,format=".mp3"):
         cFrom = time_box[audio][0][0]
         cTo = time_box[audio][0][1]
         audioCut(targetAudio, outputAudio, cFrom, cTo)
+
+def audio_webcam_extract(target,output):
+    print("sub process for audio")
+    conversion_command = 'ffmpeg -loglevel quiet -hide_banner -i "{0}" -vn -acodec copy "{1}"'.format(target,output)
+    run_command(conversion_command)

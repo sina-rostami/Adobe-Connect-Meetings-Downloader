@@ -22,10 +22,19 @@ def convert_media(meeting_id):
     camera_voips = [f for f in os.listdir(meeting_temp_path) if re.match('cameraVoip.+\.flv', f)]
     for camera_voip in camera_voips:
         if camera_voip in time_table:
-            aud = ffmpeg.input(meeting_temp_path + camera_voip).audio
-            prop = ffmpeg.probe(meeting_temp_path + camera_voip)
-            if len(prop['streams']) > 1: # check is audio have data
+            target_audio_path = meeting_temp_path + camera_voip
+            prop = len(ffmpeg.probe(meeting_temp_path + camera_voip)['streams'])
+
+            if prop == 2: # check is audio have data
+                aud = ffmpeg.input(target_audio_path).audio
                 audios.append(ffmpeg.filter(aud, 'adelay', '{}ms'.format(time_table[camera_voip][0])))
+            
+            if prop > 2 : # voice from web cam
+                output_audio_path = meeting_temp_path + 'audio' + camera_voip
+                milad.audio_webcam_extract(target_audio_path,output_audio_path)
+                aud = ffmpeg.input(output_audio_path).audio
+                audios.append(ffmpeg.filter(aud, 'adelay', '{}ms'.format(time_table[camera_voip][0])))
+            
     if len(audios) > 1:
         aud_out = ffmpeg.filter(audios, 'amix', inputs=len(audios))
     else:
