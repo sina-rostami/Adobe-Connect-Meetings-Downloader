@@ -86,10 +86,10 @@ def get_events_time_table(file_name):
                     time_table.pop(event_name)
     time_line = 0
     for ev in time_table:
-        time_line = int(time_table[ev][1]) if time_line < int(time_table[ev][1]) else time_line
         time_table[ev][0] = time_table[ev][0] - time_table[first_stream][0]
         if len(time_table[ev]) == 2:
             time_table[ev][1] = time_table[ev][1] - time_table[first_stream][0]
+            time_line = int(time_table[ev][1]) if time_line < int(time_table[ev][1]) else time_line
     return [time_table,time_line]
 
 
