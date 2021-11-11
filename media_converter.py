@@ -2,70 +2,70 @@ import ffmpeg
 import xmltodict
 import os
 import re
+import tools as milad # Miladshakerdn => Github
 
+def dd(data):
+    print("die dump => ",data)
+    exit()
+def d(data):
+    print("dump => ",data)
 
 def convert_media(meeting_id):
     # for debugging change from 'quiet' to 'info'
-    log_level = 'quiet'
+    log_level = 'info'
 
     meeting_temp_path = './temp/' + meeting_id + '/'
     output_path = './output/' + meeting_id + '/'
-
+    targetAudio = output_path + 'meeting_audio.mp3'
+    
     if not os.path.exists('./output/' + meeting_id):
         os.makedirs(output_path)
 
-    time_table = get_events_time_table(meeting_id)
+    time_table,time_Line = get_events_time_table(meeting_id)
+    time_box = milad.timeLine(time_table,time_Line,meeting_id)
+    
+    # removefile(output_path)
+    audios = []
+    camera_voips = [f for f in os.listdir(meeting_temp_path) if re.match('cameraVoip.+\.flv', f)]
+    for camera_voip in camera_voips:
+        if camera_voip in time_table:
+            aud = ffmpeg.input(meeting_temp_path + camera_voip).audio
+            prop = ffmpeg.probe(meeting_temp_path + camera_voip)
+            if len(prop['streams']) > 1: # check is audio have data
+                audios.append(ffmpeg.filter(aud, 'adelay', '{}ms'.format(time_table[camera_voip][0])))
+    if len(audios) > 1:
+        aud_out = ffmpeg.filter(audios, 'amix', inputs=len(audios))
+    else:
+        aud_out = audios[0]
+
+    stream = ffmpeg.output(aud_out, targetAudio, loglevel=log_level)
+    try:
+        ffmpeg.run(stream, overwrite_output=True)
+    except:
+        pass
+    # Split audios
+    milad.audios_splitter(targetAudio, time_box, output_path)
+
     videos = []
     prev_scrnshr = ""
     for item in time_table:
         # iterating over time_table because it's sorted already
         if str(item).startswith('screenshare'):
             vid = ffmpeg.input(meeting_temp_path + item).video
-            # if prev_scrnshr:
-            #     start_duration = time_table[item][0] - time_table[prev_scrnshr][1]
-            #     if start_duration < 0:
-            #         other_file_input = ffmpeg.input(meeting_temp_path + prev_scrnshr).video
-            #         other_file_stream = ffmpeg.output(other_file_input, output_path + item, loglevel=log_level)
-            #         ffmpeg.run(other_file_stream)
-            # else:
-            #     prev_scrnshr = item
-            #     start_duration = time_table[item][0]
-            #videos.append(ffmpeg.filter(vid, 'tpad', start_duration='{}ms'.format(start_duration)))
+            vTemp = '{0}_Video({1})_'.format(meeting_id,item.replace(".flv",""))
+            video_name = ""
+            for iname in time_box:
+                if str(iname).startswith(vTemp):
+                    video_name = iname
+            targetAudioV = video_name + ".mp3"
+            targetVideo = video_name + ".flv"
             try:
-                ffmpeg.run(ffmpeg.output(vid, output_path + item.split('.')[0] + '.mp4', f='flv', c='copy', loglevel=log_level), overwrite_output=True)
+                ffmpeg.run(ffmpeg.output(vid, output_path + video_name + '.flv', f='flv', c='copy', loglevel=log_level), overwrite_output=True)
+                milad.videoAddAudio(targetAudioV, targetVideo, output_path)
+                # milad.removefile(targetAudio) # keep all
             except:
-                pass
-
-    audios = []
-    camera_voips = [f for f in os.listdir(meeting_temp_path) if re.match('cameraVoip.+\.flv', f)]
-    for camera_voip in camera_voips:
-        if camera_voip in time_table:
-            aud = ffmpeg.input(meeting_temp_path + camera_voip).audio
-            audios.append(ffmpeg.filter(aud, 'adelay', '{}ms'.format(time_table[camera_voip][0])))
-
-    if len(audios) > 1:
-        aud_out = ffmpeg.filter(audios, 'amix', inputs=len(audios))
-    else:
-        aud_out = audios[0]
-
-    # if len(videos) == 0:
-    #     vid_out = None
-    # elif len(videos) == 1:
-    #     vid_out = videos[0]
-    # else:
-    #     vid_out = ffmpeg.filter(videos, 'concat', n=str(len(videos)), v=1, a=0)
-    # if vid_out:
-    #     streamv = ffmpeg.output(vid_out, output_path + 'output.flv', f='flv', loglevel=log_level)
-    #     print(' '.join(ffmpeg.compile(streamv)))
-    #     ffmpeg.run(streamv, overwrite_output=True)
-# -f flv -c copy for each one
-
-    stream = ffmpeg.output(aud_out, output_path + 'meeting_audio.mp3', loglevel=log_level)
-    try:
-        ffmpeg.run(stream, overwrite_output=True)
-        return True
-    except:
-        return False
+                return False
+    return True
 
 
 def get_events_time_table(file_name):
@@ -78,9 +78,9 @@ def get_events_time_table(file_name):
         if event.get('Method') and event.get('String') and event.get('Array') and event.get('Array').get('Object'):
             if event.get('String') != "streamAdded" and event.get('String') != "streamRemoved":
                 continue
-            event_name = event['Array']['Object']['streamName'].replace('/', '') + '.flv'
+            event_name = event['Array']['Object']['streamName'].replace('/', '') + '.flv' # dump =>  ['/screenshare_6_15', 'screenshare_6_15.flv']
             if not first_stream:
-                first_stream = event_name
+                first_stream = event_name #dump only=>  cameraVoip_0_3.flv
             if event.get('String') == "streamAdded":
                 if not event_name in time_table:
                     time_table[event_name] = list()
@@ -91,13 +91,13 @@ def get_events_time_table(file_name):
                     time_table[event_name].append(end_time)
                 else:
                     time_table.pop(event_name)
-
+    time_line = 0
     for ev in time_table:
+        time_line = int(time_table[ev][1]) if time_line < int(time_table[ev][1]) else time_line
         time_table[ev][0] = time_table[ev][0] - time_table[first_stream][0]
         if len(time_table[ev]) == 2:
             time_table[ev][1] = time_table[ev][1] - time_table[first_stream][0]
-
-    return time_table
+    return [time_table,time_line]
 
 
 if __name__ == "__main__":
