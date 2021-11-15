@@ -46,7 +46,7 @@ class Downloader:
             self.login_data[elem] = soup.find(
                 'input', attrs={'name': elem})['value']
         post = self.dl_session.post(req.url,
-                                    data=self.login_data, headers=self.login_headers)
+                                    data=self.login_data, headers=self.login_headers, verify=False)
         if "Invalid credentials" in post.text or "loginerrormessage" in post.text:
             print("Username or Password is Incorrect")
             time.sleep(10)
@@ -54,7 +54,7 @@ class Downloader:
         soup = BeautifulSoup(post.content, 'html5lib')
         if 'user_radio_0' in post.text:
             post = self.dl_session.post(post.url, data={'rdb': soup.find('input', attrs={
-                                        'name': 'rdb', 'id': 'user_radio_0'})['value'], 'button': 'Log in'}, headers=self.login_headers)
+                                        'name': 'rdb', 'id': 'user_radio_0'})['value'], 'button': 'Log in'}, headers=self.login_headers, verify=False)
         self.set_cookies()
         print('Logged in!')
         return True
@@ -71,7 +71,7 @@ class Downloader:
     def create_downlaod_link(self):
         print('Creating download link...')
         self.meeting_page_req = self.dl_session.get(
-            self.pasted_url, headers=self.download_headers)
+            self.pasted_url, headers=self.download_headers, verify=False)
 
         self.set_cookies()
         try:
@@ -93,7 +93,7 @@ class Downloader:
         print('Downloading...')
         try:
             self.download_req = self.dl_session.get(
-                self.download_link, headers=self.download_headers, stream=True)
+                self.download_link, headers=self.download_headers, stream=True, verify=False)
             if not os.path.exists('temp'):
                 os.mkdir('temp')
             with open('./temp/'+self.name_to_save+'.zip', 'wb') as file:
