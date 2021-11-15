@@ -20,6 +20,7 @@ class Downloader:
                  login_data,
                  login_headers, download_headers):
         print('Preparing...')
+        requests.packages.urllib3.disable_warnings()
         self.login_page_url = login_page_url
         self.base_download_url = base_download_url
         self.pasted_url = None
