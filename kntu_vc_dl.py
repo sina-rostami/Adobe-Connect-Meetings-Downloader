@@ -16,8 +16,8 @@ def kntu_download(user_name, password, pasted_urls):
     'rememberusername' : '0'
     }
 
-    kntu_downloader = Downloader('https://vc4001.kntu.ac.ir/login/index.php',
-    'https://connect.kntu.ac.ir/',
+    kntu_downloader = Downloader('https://vc4011.kntu.ac.ir/login/index.php',
+    'https://connect4011.kntu.ac.ir/',
     kntu_login_data, kntu_headers, kntu_headers)
 
     if not kntu_downloader.login({'logintoken'}):
