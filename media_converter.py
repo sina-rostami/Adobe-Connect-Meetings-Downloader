@@ -8,7 +8,7 @@ def convert_media(meeting_id):
     # for debugging change from 'quiet' to 'info'
     log_level = 'quiet'
     # Sound volume 0-100
-    volume = 1
+    volume = 50
     meeting_temp_path = './temp/' + meeting_id + '/'
     output_path = './output/' + meeting_id + '/'
     targetAudio = output_path + 'meeting_audio.mp3'
